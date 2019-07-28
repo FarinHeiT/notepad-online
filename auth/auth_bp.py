@@ -24,3 +24,8 @@ def login():
 
 	# If GET request - just render template
 	return render_template('login.html')
+
+
+@auth.route('/register', methods=('GET', 'POST'))
+def register():
+	return render_template('register.html')
