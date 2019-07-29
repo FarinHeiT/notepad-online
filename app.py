@@ -19,5 +19,8 @@ migrate = Migrate(app, db)
 
 # We load views and blueprints here because of circular imports  
 from auth.auth_bp import auth
+from text_entries.text_entries import textEntries
 import view
 app.register_blueprint(auth, url_prefix='/auth')
+# No prefix for textEntries, but I created separate blueprint to keep things nice
+app.register_blueprint(textEntries)

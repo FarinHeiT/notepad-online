@@ -9,6 +9,7 @@ auth = Blueprint('auth', __name__, template_folder='templates')
 
 # Flask-Login object
 login_manager = LoginManager()
+login_manager.login_view = 'auth.login' 
 login_manager.init_app(app)
 
 @login_manager.user_loader
