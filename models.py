@@ -1,5 +1,6 @@
 from app import db
 from datetime import datetime
+from flask_login import UserMixin
 
 
 starred_entry = db.Table('starred_entry', 
@@ -7,7 +8,7 @@ starred_entry = db.Table('starred_entry',
 						 db.Column('entry_id', db.Integer, db.ForeignKey('text_entry.id'))
 						 )
 
-class User(db.Model):
+class User(db.Model, UserMixin):
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(50), unique=True)
 	password = db.Column(db.String(100))
