@@ -22,10 +22,10 @@ class User(db.Model, UserMixin):
 
 class TextEntry(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	author_id = db.ForeignKey('user.id')
+	author_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
 	body = db.Column(db.Text(2555))
 	name = db.Column(db.String(255))
 	created_date = db.Column(db.DateTime, default=datetime.now())
 	link = db.Column(db.String(155), unique=True)
-	publicity = db.Column(db.Boolean())
-	expires_on = db.Column(db.DateTime)
+	publicity = db.Column(db.Boolean(), default=False)
+	expires_on = db.Column(db.Date)
