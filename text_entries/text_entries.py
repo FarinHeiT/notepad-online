@@ -18,7 +18,8 @@ def generateLink(name):
 @textEntries.route('/my-notes')
 @login_required
 def my_notes():
-    return render_template('my_notes.html')
+    notes = TextEntry.query.filter(TextEntry.author_id==current_user.id).all()
+    return render_template('my_notes.html', notes=notes)
 
 
 @textEntries.route('/my-notes/create', methods=('GET', 'POST'))
