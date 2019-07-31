@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, abort
 from flask_login import login_required, current_user
 from datetime import datetime, timedelta
 from models import TextEntry
@@ -52,3 +52,31 @@ def create_note():
     expires_date = str(datetime.today() + timedelta(days=1))
     return render_template('create_note.html', expires_date=expires_date)
 
+
+@textEntries.route('/my-notes/<link>', methods=('GET', 'POST'))
+@login_required
+def note_detail(link):
+
+    note = TextEntry.query.filter(TextEntry.link==link).first()
+
+    if note.publicity == 0 and current_user.id != note.author_id:
+        abort(403)
+        
+    if request.method == 'POST':
+        note.name = request.form.get('name')
+        note.body = request.form.get('body')
+        note.publicity = bool(request.form.get('private'))
+        note.expires_on = datetime.strptime(request.form.get('expires'), '%Y-%m-%d')
+
+        if not note.name or len(note.name) < 10:
+            flash('Name must be specified.')
+        elif not note.body or len(note.body) < 10:
+            flash('Body must be specified.')
+        else:
+            try:
+                db.session.add(note)
+                db.session.commit()
+            except:
+                flash('Something went wrong.')
+    
+    return render_template('note_detail.html', note=note)

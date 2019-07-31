@@ -17,7 +17,7 @@
 </head>
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark  bg-dark">
-          <a class="navbar-brand" href="{{ url_for('index') }}">Navbar</a>
+          <a class="navbar-brand" href="{% if current_user.is_authenticated %}{{ url_for('textEntries.my_notes') }}{% else %}{{ url_for('index') }}{% endif %}">Navbar</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -37,7 +37,7 @@
                   </a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="{{ url_for('textEntries.create_note') }}"><i class="fa fa-plus"></i> Create Note</a>
-                    <a class="dropdown-item" href="#">Another action</a>
+                    <a class="dropdown-item" href="#" >Another action</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fa fa-sign-out"></i> Log Out</a>
                   </div>
