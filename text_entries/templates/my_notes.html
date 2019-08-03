@@ -28,21 +28,29 @@
 
 {% block content %}
 
-<div class='d-flex justify-content-between align-content-start flex-wrap'>
-
-    {% for note in notes %}
-        <div class="card m-2" style="width: 18rem;">
-            <div class="card-body">
-            <h5 class="card-title">{{ note.name[:50] }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted"></h6>{% if not note.publicity %} <span class="badge badge-secondary">Public</span> {% else %}<span class="badge badge-success">Private</span> {% endif %}</h6>
-            <p class="card-text">{{ note.body[:50] }}</p>
-            <a href="{{ url_for('textEntries.note_detail', link=note.link) }}" class="card-link">Details...</a>
-            <a href="#" class="card-link">Copy link</a>
-            </div>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="alert alert-danger offset-md-3 col-md-6">
+            {{ messages[0] }}..
         </div>
-    {% endfor %}
-</div>
-<a href="{{ url_for('textEntries.create_note') }}"><img id='create_icon' src="https://img.icons8.com/doodle/48/000000/plus.png"></a>
+    {% endif %}
+    {% endwith %}
 
-    
+    <div class='d-flex justify-content-between align-content-start flex-wrap'>
+
+        {% for note in notes %}
+            <div class="card m-2" style="width: 18rem;">
+                <div class="card-body">
+                <h5 class="card-title">{{ note.name[:50] }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted"></h6>{% if not note.publicity %} <span class="badge badge-secondary">Public</span> {% else %}<span class="badge badge-success">Private</span> {% endif %}</h6>
+                <p class="card-text">{{ note.body[:50] }}</p>
+                <a href="{{ url_for('textEntries.note_detail', link=note.link) }}" class="card-link">Details...</a>
+                <a href="#" class="card-link">Copy link</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <a href="{{ url_for('textEntries.create_note') }}"><img id='create_icon' src="https://img.icons8.com/doodle/48/000000/plus.png"></a>
+
+        
 {% endblock %}

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, abort
+from flask import Blueprint, render_template, request, flash, abort, redirect, url_for
 from flask_login import login_required, current_user
 from datetime import datetime, timedelta
 from models import TextEntry
@@ -18,7 +18,18 @@ def generateLink(name):
 @textEntries.route('/my-notes')
 @login_required
 def my_notes():
-    notes = TextEntry.query.filter(TextEntry.author_id==current_user.id).all()
+    ''' Return notes created by current user and that aren't expired '''
+
+    # Delete expired Notes
+    try:
+        expired_notes = TextEntry.query.filter(TextEntry.expires_on < datetime.today()).delete()
+        db.session.commit()
+    except:
+        print(f'Something went wrong. Tried to delete expired notes.')
+
+    notes = TextEntry.query.filter(TextEntry.author_id==current_user.id,
+                                   TextEntry.expires_on > datetime.today()).all()
+
     return render_template('my_notes.html', notes=notes)
 
 
@@ -57,12 +68,19 @@ def create_note():
 @login_required
 def note_detail(link):
 
-    note = TextEntry.query.filter(TextEntry.link==link).first()
+    try:
+        note = TextEntry.query.filter(TextEntry.link==link).first()
+        print(note)
+        if note == None:
+            flash('No such note.')
+            return redirect(url_for('index'))
+    except:
+        print('Something went wrong. Tried to get specified note.')
 
-    if note.publicity == 0 and current_user.id != note.author_id:
+    if note.publicity == 1 and current_user.id != note.author_id:
         abort(403)
         
-    if request.method == 'POST':
+    if request.method == 'POST' and note.author_id == current_user.id:
         note.name = request.form.get('name')
         note.body = request.form.get('body')
         note.publicity = bool(request.form.get('private'))
