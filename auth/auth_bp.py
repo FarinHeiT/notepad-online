@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from app import db, app
 from models import User
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -69,5 +69,36 @@ def logout():
     ''' If user is logged in - loggs him out '''
     logout_user()
     return redirect(url_for('index'))
+
+@auth.route('/_reset_pwd')
+def reset_pwd():
+    
+    data = {
+        'status': 'success',
+        'done': False
+    }
+
+    username = request.args.get('username')
+    step = request.args.get('step')
+
+    user = User.query.filter(User.username==username).first()
+
+    if step == '1':
+        if user:
+            data['secret_q'] = user.secret_q
+            data['done'] = True
+    elif step == '2':
+        answer = request.args.get('secret_q_ans')
+        if answer == user.secret_q_ans:
+            data['done'] = True
+    elif step == '3':
+        new_password = request.args.get('new_pwd')
+        user.password = generate_password_hash(new_password)
+        db.session.commit()
+        data['done'] = True
+
+
+    return jsonify(data)
+
 
 
