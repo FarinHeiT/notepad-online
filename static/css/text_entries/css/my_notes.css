@@ -1,0 +1,33 @@
+  #menu {
+            position:fixed;
+            right:20px;
+            bottom:20px;
+            margin:30px;
+            transition: all .3s;
+            width: auto;
+        }
+
+        #create_icon {
+            display: block;
+            margin: 0 auto;
+        }
+
+        #next_page_icon,  #prev_page_icon {
+            height: 40px;
+        }
+
+        #settings_icon { 
+            display: block;
+            margin: 0 auto;
+            width: 60px;
+        }
+
+        .right-menu:hover {
+            transform: scale(1.1) rotate(10deg);
+            cursor: pointer;
+        }
+
+        .disabled_page_icon {
+            pointer-events: none;
+            cursor: default;
+         }
