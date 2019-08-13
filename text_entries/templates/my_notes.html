@@ -9,19 +9,40 @@
 
     <style>
 
-        #create_icon {
+        #menu {
             position:fixed;
             right:20px;
             bottom:20px;
             margin:30px;
             transition: all .3s;
+            width: auto;
+        }
+
+        #create_icon {
+            display: block;
+            margin: 0 auto;
+        }
+
+        #next_page_icon,  #prev_page_icon {
+            height: 40px;
+        }
+
+        #settings_icon { 
+            display: block;
+            margin: 0 auto;
             width: 60px;
         }
 
-        #create_icon:hover {
+        .right-menu:hover {
             transform: scale(1.1) rotate(10deg);
             cursor: pointer;
         }
+
+        .disabled_page_icon {
+            pointer-events: none;
+            cursor: default;
+         }
+
     </style>
 
 {% endblock %}
@@ -36,9 +57,10 @@
     {% endif %}
     {% endwith %}
 
+
     <div class='d-flex justify-content-between align-content-start flex-wrap'>
 
-        {% for note in notes %}
+        {% for note in notes.items %}
             <div class="card m-2" style="width: 18rem;">
                 <div class="card-body">
                 <h5 class="card-title">{{ note.name[:50] }}</h5>
@@ -50,7 +72,25 @@
             </div>
         {% endfor %}
     </div>
-    <a href="{{ url_for('textEntries.create_note') }}"><img id='create_icon' src="https://img.icons8.com/doodle/48/000000/plus.png"></a>
+
+
+
+    <div class="container text-right" id="menu">
+        <a href="{{ url_for('textEntries.create_note') }}"><img class='right-menu' id='create_icon' src="https://img.icons8.com/doodle/48/000000/plus.png"></a>
+        <a href="?page={{ notes.prev_num }}" {% if not notes.has_prev %}class="disabled_page_icon"{% endif %}><img class='right-menu' id='prev_page_icon' src="{{ url_for('static', filename='images/prev_page.png') }}"></a>
+        <a href="?page={{ notes.next_num }}" {% if not notes.has_next %}class="disabled_page_icon"{% endif %}><img class='right-menu' id='next_page_icon' src="{{ url_for('static', filename='images/next_page.png') }}"></a>
+        <div class="dropdown dropleft">
+            <a class="" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img class='right-menu' id='settings_icon' src="https://img.icons8.com/plasticine/2x/gear.png">
+            </a>
+          
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <a class="dropdown-item" href="#">Action</a>
+              <a class="dropdown-item" href="#">Another action</a>
+              <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+          </div>
+    </div>
 
         
 {% endblock %}

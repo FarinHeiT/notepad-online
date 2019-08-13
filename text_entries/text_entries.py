@@ -27,8 +27,12 @@ def my_notes():
     except:
         print(f'Something went wrong. Tried to delete expired notes.')
 
+    # Get current page argument (if not specified - then first page)
+    page = int(request.args.get('page')) if request.args.get('page') and request.args.get('page').isdigit() else 1
+
+    # Get notes for current page
     notes = TextEntry.query.filter(TextEntry.author_id==current_user.id,
-                                   TextEntry.expires_on > datetime.today()).all()
+                                   TextEntry.expires_on > datetime.today()).paginate(page, 6)
 
     return render_template('my_notes.html', notes=notes)
 
