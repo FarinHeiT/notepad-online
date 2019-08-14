@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, flash, abort, redirect, url_for
+from flask import Blueprint, render_template, request, flash, abort, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from datetime import datetime, timedelta
-from models import TextEntry
+from models import TextEntry, User
 from app import db
 import hashlib
 
@@ -74,6 +74,8 @@ def note_detail(link):
 
     try:
         note = TextEntry.query.filter(TextEntry.link==link).first()
+        # Determine whether note is already starred by current user
+        starred = bool(list(filter(lambda x: x.id == current_user.id, note.starred_by)))
         print(note)
         if note == None:
             flash('No such note.')
@@ -101,4 +103,35 @@ def note_detail(link):
             except:
                 flash('Something went wrong.')
     
-    return render_template('note_detail.html', note=note)
+    return render_template('note_detail.html', note=note, starred=starred)
+
+
+@textEntries.route('/_star-note')
+def star_note():
+
+    data = {
+        'status': 'success'
+    }
+
+    note_id = request.args.get('note_id')
+    author_id = request.args.get('author_id')
+
+    note = TextEntry.query.filter(TextEntry.id==note_id).first()
+    if request.args.get('action') == 'star':
+        # If already starred then show err
+        if list(filter(lambda x: x.id == int(author_id), note.starred_by)):
+            data['result'] = 'error'
+        else:
+            data['result'] = 'success'
+            note.starred_by.append(
+                User.query.filter(User.id==author_id).first()
+            )
+            db.session.commit()
+    else:
+        data['result'] = 'success'
+        note.starred_by.remove(
+            User.query.filter(User.id==author_id).first()
+        )
+        db.session.commit()
+
+    return jsonify(data)

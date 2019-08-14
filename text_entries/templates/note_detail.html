@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/css/login.css') }}">
 <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.5.0/css/bootstrap4-toggle.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.5.0/js/bootstrap4-toggle.min.js"></script>
+<!-- Jquery connection -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <style>
     #login .container #login-row #login-column #login-box {
         height: 510px;
@@ -19,7 +21,62 @@
         .private {
             margin: 3px;
         }
+
+    #private_check {
+        display: inline-block;
+    }
+
+    #sbt_button {
+        display: inline-block;
+        width: auto;
+    }
+
+    #star_icon {
+        width: 10%;
+        cursor: pointer;
+    }
+
 </style>
+
+<script>
+
+    $('document').ready(function(){
+        $('#star_icon').click(function(){
+            // If unstarred - then star note
+            if ($(this).attr('src').indexOf('un') != -1) {
+                $.ajax({
+                    url: '/_star-note',
+                    data: {
+                        note_id: {{ note.id }},
+                        author_id:  {{ current_user.id }},
+                        action: 'star'
+                    },
+                    success: function(data) {
+                        if (data['result'] == 'success') {
+                            // Change icon to starred
+                            $('#star_icon').attr('src', '{{ url_for("static", filename="images/starred_note.png") }}')
+                        }
+                    }
+                });
+
+            } else {
+                $.ajax({
+                    url: '/_star-note',
+                    data: {
+                        note_id: {{ note.id }},
+                        author_id:  {{ current_user.id }},
+                        action: 'unstar'
+                    },
+                    success: function(data) {
+                            // Change icon to unstarred
+                            $('#star_icon').attr('src', '{{ url_for("static", filename="images/unstarred_note.png") }}')
+                    }
+                });
+            }
+        });
+    });
+
+</script>
 
 {% endblock %}
 
@@ -34,12 +91,16 @@
             </div>
         {% endif %}
         {% endwith %}
+
             <div class="container">
                 <div id="login-row" class="row justify-content-center align-items-center">
                     <div id="login-column" class="col-md-6">
                         <div id="login-box" class="col-md-12">
                             <form id="login-form" class="form" action="" method="post">
-                                <h3 class="text-center text-info">{{note.name[:30]}}</h3>
+                                <div class="d-flex justify-content-between">
+                                    <h3 class="text-center text-info">{{note.name[:30]}}</h3>
+                                    <img {% if not starred %} src="{{ url_for('static', filename='images/unstarred_note.png') }}" {% else %} src="{{ url_for('static', filename='images/starred_note.png') }}" {% endif %} id="star_icon" alt="Star Note">
+                                </div>
                                 <div class="form-group">
                                     <label for="name" class="text-info">Name:</label><br>
                                     <input type="text" name="name" id="name" class="form-control" value={{ note.name }} required>
@@ -52,10 +113,10 @@
                                         <label for="expires" class="text-info">Expires on:</label><br>
                                         <input type="date" value={{ note.expires_on }}  name="expires" id="expires" class="form-control">
                                     </div>
-                                    <div class="private">
+                                    <div class="private" id="private_check">
                                             <input id="private" name="private" type="checkbox" value={{ note.publicity }} {% if note.publicity %} checked {% endif %} data-toggle="toggle" data-onstyle="success" data-on="Private" data-off="Public"><br>
                                     </div>
-                                <div class="form-group">
+                                <div class="form-group" id="sbt_button">
                                     <input type="submit" name="submit" class="btn btn-info btn-md btn-block" value="Save">
                                 </div>
                             </form>
