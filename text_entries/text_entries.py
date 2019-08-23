@@ -30,9 +30,16 @@ def my_notes():
     # Get current page argument (if not specified - then first page)
     page = int(request.args.get('page')) if request.args.get('page') and request.args.get('page').isdigit() else 1
 
-    # Get notes for current page
-    notes = TextEntry.query.filter(TextEntry.author_id==current_user.id,
-                                   TextEntry.expires_on > datetime.today()).paginate(page, 6)
+    if 'starred' in request.args:
+        # Get current user
+        user = User.query.filter(User.id==current_user.id).first()
+        # Get starred notes of the current user
+        notes = user.starred_entries.paginate(page, 6)
+
+    else:
+        # Get all notes for current page
+        notes = TextEntry.query.filter(TextEntry.author_id==current_user.id,
+                                    TextEntry.expires_on > datetime.today()).paginate(page, 6)
 
     return render_template('my_notes.html', notes=notes)
 
@@ -60,6 +67,9 @@ def create_note():
                                 author_id=author_id, expires_on=expires_on)
                 db.session.add(note)
                 db.session.commit()
+
+                return redirect(url_for('textEntries.note_detail', link=link))
+
             except:
                 flash('Something went wrong.')
 

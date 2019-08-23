@@ -39,6 +39,7 @@
 </style>
 
 <script>
+    // Starring and unstarring notes
 
     $('document').ready(function(){
         $('#star_icon').click(function(){
@@ -98,7 +99,7 @@
                         <div id="login-box" class="col-md-12">
                             <form id="login-form" class="form" action="" method="post">
                                 <div class="d-flex justify-content-between">
-                                    <h3 class="text-center text-info">{{note.name[:30]}}</h3>
+                                    <h3 class="text-center text-info">{{note.name[:20]}}</h3>
                                     <img {% if not starred %} src="{{ url_for('static', filename='images/unstarred_note.png') }}" {% else %} src="{{ url_for('static', filename='images/starred_note.png') }}" {% endif %} id="star_icon" alt="Star Note">
                                 </div>
                                 <div class="form-group">

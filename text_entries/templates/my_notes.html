@@ -8,6 +8,18 @@
 {% block link_head %}
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/text_entries/css/my_notes.css') }}">
+    <!-- Jquery connection -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script>
+        $('document').ready(function(){
+            $('.copy_link').on('click', function(){
+                // Use parents cause there are many clones of this input
+                $(this).parent().parent().find('#link').select();
+                document.execCommand('copy');
+            });
+        });
+    </script>
 
 {% endblock %}
 
@@ -30,8 +42,13 @@
                 <h5 class="card-title">{{ note.name[:50] }}</h5>
                 <h6 class="card-subtitle mb-2 text-muted"></h6>{% if not note.publicity %} <span class="badge badge-secondary">Public</span> {% else %}<span class="badge badge-success">Private</span> {% endif %}</h6>
                 <p class="card-text">{{ note.body[:50] }}</p>
-                <a href="{{ url_for('textEntries.note_detail', link=note.link) }}" class="card-link">Details...</a>
-                <a href="#" class="card-link">Copy link</a>
+                <a href="{{ url_for('textEntries.note_detail', link=note.link) }}" class="card-link">Details...</a><br>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" name="link" id="link" value="{{ request.url + '/' + note.link }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary copy_link">Copy link</button>    
+                    </div>
+                </div>
                 </div>
             </div>
         {% endfor %}
@@ -49,7 +66,11 @@
             </a>
           
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <a class="dropdown-item" href="#">Action</a>
+            {% if 'starred' in request.args %}
+                <a class="dropdown-item" href="{{ url_for('textEntries.my_notes') }}">All Notes</a>
+            {% else %}
+                <a class="dropdown-item" href="{{ url_for('textEntries.my_notes') }}?starred">Starred Notes</a>
+            {% endif %}
               <a class="dropdown-item" href="#">Another action</a>
               <a class="dropdown-item" href="#">Something else here</a>
             </div>
