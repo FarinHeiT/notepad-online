@@ -58,8 +58,8 @@
 
     <div class="container text-right" id="menu">
         <a href="{{ url_for('textEntries.create_note') }}"><img class='right-menu' id='create_icon' src="https://img.icons8.com/doodle/48/000000/plus.png"></a>
-        <a href="?page={{ notes.prev_num }}" {% if not notes.has_prev %}class="disabled_page_icon"{% endif %}><img class='right-menu' id='prev_page_icon' src="{{ url_for('static', filename='images/prev_page.png') }}"></a>
-        <a href="?page={{ notes.next_num }}" {% if not notes.has_next %}class="disabled_page_icon"{% endif %}><img class='right-menu' id='next_page_icon' src="{{ url_for('static', filename='images/next_page.png') }}"></a>
+        <a {% if 'starred' in request.args %} href="?starred&page={{ notes.prev_num }}" {% else %} href="?page={{ notes.prev_num }}" {% endif %} {% if not notes.has_prev %}class="disabled_page_icon"{% endif %}><img class='right-menu' id='prev_page_icon' src="{{ url_for('static', filename='images/prev_page.png') }}"></a>
+        <a {% if 'starred' in request.args %} href="?starred&page={{ notes.next_num }}" {% else %} href="?page={{ notes.next_num }}" {% endif %} {% if not notes.has_next %}class="disabled_page_icon"{% endif %}><img class='right-menu' id='next_page_icon' src="{{ url_for('static', filename='images/next_page.png') }}"></a>
         <div class="dropdown dropleft">
             <a class="" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <img class='right-menu' id='settings_icon' src="https://img.icons8.com/plasticine/2x/gear.png">
