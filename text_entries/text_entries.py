@@ -86,7 +86,6 @@ def note_detail(link):
         note = TextEntry.query.filter(TextEntry.link==link).first()
         # Determine whether note is already starred by current user
         starred = bool(list(filter(lambda x: x.id == current_user.id, note.starred_by)))
-        print(note)
         if note == None:
             flash('No such note.')
             return redirect(url_for('index'))

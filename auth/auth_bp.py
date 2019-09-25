@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from app import db, app
 from models import User
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_login import login_required, login_user, logout_user, LoginManager
+from flask_login import login_required, login_user, logout_user, LoginManager, current_user
 
 
 auth = Blueprint('auth', __name__, template_folder='templates')
@@ -100,5 +100,15 @@ def reset_pwd():
 
     return jsonify(data)
 
-
+@auth.route('_new_password')
+def new_password():
+    old_password = request.args.get('old_password')
+    new_password = request.args.get('new_password')
+    user = User.query.filter(User.username==current_user.username).first()
+    if check_password_hash(user.password, old_password):
+        user.password = generate_password_hash(new_password)
+        db.session.commit()
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False})
 

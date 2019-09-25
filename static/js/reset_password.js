@@ -1,7 +1,7 @@
 
 // Execute the script after page loads.
 $('document').ready(function(){
-
+    
     $('#pwd_user_find').click(function() {
     $.ajax({
         url: '/auth/_reset_pwd',
