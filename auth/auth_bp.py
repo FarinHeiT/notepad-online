@@ -12,6 +12,7 @@ login_manager = LoginManager()
 login_manager.login_view = 'auth.login' 
 login_manager.init_app(app)
 
+
 @login_manager.user_loader
 def load_user(user_id):
     ''' Is required by Flask-login, details in docs '''
@@ -70,6 +71,7 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+
 @auth.route('/_reset_pwd')
 def reset_pwd():
     
@@ -100,7 +102,7 @@ def reset_pwd():
 
     return jsonify(data)
 
-@auth.route('_new_password')
+@auth.route('/_new_password')
 def new_password():
     old_password = request.args.get('old_password')
     new_password = request.args.get('new_password')
@@ -112,3 +114,32 @@ def new_password():
     else:
         return jsonify({'success': False})
 
+
+@auth.route('/get_secret')
+def get_secret():
+    ''' returns the secret question the given user '''
+    username = request.args.get('username')
+    return User.query.filter(User.username==username).secret_q
+
+
+@auth.route('/check_secret')
+def check_secret():
+    ''' checks whether the given answer for a secret_q is valid '''
+    username = request.args.get('username')
+    secret_q_ans = request.args.get('username')
+    return User.query.filter(User.username==username).secret_q_ans == secret_q_ans
+
+
+@auth.route('/change_pass')
+def change_pass():
+    ''' change password '''
+    username = request.args.get('username')
+    new_password = request.args.get('new_password')
+    return User.query.filter(User.username==username).password = generate_password_hash(new_password)
+
+# business logic
+# use get_secret  to get secret_q of the specific user
+# use check_secret to chech whether the given answer if valid for a given user
+# use change_pass to change pass to the new one
+# in-view logic: we give a secret question to user, then we check the answer with check_secret, if check_secret return True - then we change_pass
+#
